@@ -2,7 +2,7 @@
 
 **The open standard for AI-era software delivery governance.**
 
-AI writes code faster than ever — [90% of developers use AI daily](https://cloud.google.com/blog/products/devops-sre/dora-2025-report). But delivery governance hasn't kept up. Open Delivery Spec defines standardized, machine-parseable schemas for every artifact in the software delivery lifecycle.
+AI writes code faster than ever — [90% of developers use AI daily](https://dora.dev/research/2025/). But delivery governance hasn't kept up. Open Delivery Spec defines standardized, machine-parseable schemas for every artifact in the software delivery lifecycle.
 
 ## What We Solve
 
