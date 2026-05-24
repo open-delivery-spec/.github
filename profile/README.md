@@ -1,6 +1,6 @@
 # 🚀 Open Delivery Spec
 
-**The open standard for AI-era software delivery governance.**
+**An open specification for machine-readable delivery governance evidence in the AI era.**
 
 AI writes code faster than ever — [90% of developers use AI daily](https://dora.dev/research/2025/). But delivery governance hasn't kept up. Open Delivery Spec defines standardized, machine-parseable schemas for core software delivery governance artifacts.
 
