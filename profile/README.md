@@ -21,6 +21,7 @@ AI writes code faster than ever — [90% of developers use AI daily](https://dor
 | [cli](https://github.com/open-delivery-spec/cli) | Reference CLI tool for validation and generation |
 | [github-action](https://github.com/open-delivery-spec/github-action) | GitHub Action for automated compliance checks |
 
+> [!NOTE]
 > **Current maturity**: Modules 01–03 (Branch Naming, Commit Message, PR Description) are **Candidate**. Modules 04–09 are **Draft**. See [ROADMAP.md](https://github.com/open-delivery-spec/spec/blob/main/ROADMAP.md).
 
 ## Spec Modules
