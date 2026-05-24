@@ -1,0 +1,61 @@
+# 🚀 Open Delivery Spec
+
+**The open standard for AI-era software delivery governance.**
+
+AI writes code faster than ever — [90% of developers use AI daily](https://cloud.google.com/blog/products/devops-sre/dora-2025-report). But delivery governance hasn't kept up. Open Delivery Spec defines standardized, machine-parseable schemas for every artifact in the software delivery lifecycle.
+
+## What We Solve
+
+| Before Merge | At Merge | After Merge |
+|---|---|---|
+| Branch naming | PR descriptions | CI failure analysis |
+| Commit messages | AI change review | Release readiness |
+| | Approval workflow | Rollback plans |
+| | | Production audit evidence |
+
+## Repositories
+
+| Repository | Description |
+|-----------|-------------|
+| [spec](https://github.com/open-delivery-spec/spec) | Core specification — 9 modules with JSON Schemas |
+| [cli](https://github.com/open-delivery-spec/cli) | Reference CLI tool for validation and generation |
+| [github-action](https://github.com/open-delivery-spec/github-action) | GitHub Action for automated compliance checks |
+
+## Spec Modules
+
+1. **Branch Naming** — Standardized branch names (extends Conventional Branch)
+2. **Commit Message** — AI-attributable commit format (extends Conventional Commits)
+3. **PR Description** — Structured PR body with mandatory AI disclosure
+4. **AI Change Review** — Three-level review protocol (L1/L2/L3)
+5. **CI Failure** — Machine-parseable failure reports with AI explanation
+6. **Release Readiness** — Evidence-based release gates with scoring
+7. **Approval Workflow** — Declarative, AI-aware approval policies
+8. **Rollback Plan** — Minimum requirements for valid rollback plans
+9. **Production Release Evidence** — Immutable, auditable deployment bundles
+
+## Quick Start
+
+```bash
+# Install CLI
+go install github.com/open-delivery-spec/cli/cmd/ods@latest
+
+# Validate branch naming
+ods validate branch feature/add-oauth-login
+
+# Use GitHub Action
+- uses: open-delivery-spec/github-action@v1
+  with:
+    check: all
+```
+
+## Design Principles
+
+- **Machine-first, human-readable** — Every artifact has a JSON Schema
+- **AI-native** — AI agents are first-class participants
+- **Composable** — Use one module or all nine
+- **Tool-agnostic** — Works with any CI/CD, AI tool, or VCS
+- **Audit-ready** — Every artifact carries evidence for compliance
+
+## License
+
+All repositories are [Apache 2.0](https://www.apache.org/licenses/LICENSE-2.0) licensed.
