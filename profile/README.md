@@ -21,8 +21,6 @@ AI writes code faster than ever — [90% of developers use AI daily](https://dor
 | [cli](https://github.com/open-delivery-spec/cli) | Reference CLI tool for validation and generation |
 | [github-action](https://github.com/open-delivery-spec/github-action) | GitHub Action for automated compliance checks |
 
-> The `docs` repository is archived. All documentation now lives in `spec`.
-
 ## Spec Modules
 
 1. **Branch Naming** — Standardized branch names (extends Conventional Branch)
