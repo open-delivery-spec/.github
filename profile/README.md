@@ -2,7 +2,7 @@
 
 **The open standard for AI-era software delivery governance.**
 
-AI writes code faster than ever — [90% of developers use AI daily](https://dora.dev/research/2025/). But delivery governance hasn't kept up. Open Delivery Spec defines standardized, machine-parseable schemas for every artifact in the software delivery lifecycle.
+AI writes code faster than ever — [90% of developers use AI daily](https://dora.dev/research/2025/). But delivery governance hasn't kept up. Open Delivery Spec defines standardized, machine-parseable schemas for core software delivery governance artifacts.
 
 ## What We Solve
 
@@ -20,6 +20,8 @@ AI writes code faster than ever — [90% of developers use AI daily](https://dor
 | [spec](https://github.com/open-delivery-spec/spec) | Core specification — 9 modules with JSON Schemas (includes documentation) |
 | [cli](https://github.com/open-delivery-spec/cli) | Reference CLI tool for validation and generation |
 | [github-action](https://github.com/open-delivery-spec/github-action) | GitHub Action for automated compliance checks |
+
+> **Current maturity**: Modules 01–03 (Branch Naming, Commit Message, PR Description) are **Candidate**. Modules 04–09 are **Draft**. See [ROADMAP.md](https://github.com/open-delivery-spec/spec/blob/main/ROADMAP.md).
 
 ## Spec Modules
 
@@ -42,10 +44,11 @@ go install github.com/open-delivery-spec/cli/cmd/ods@latest
 # Validate branch naming
 ods validate branch feature/add-oauth-login
 
-# Use GitHub Action
+# Use GitHub Action (start with branch naming — the simplest check)
 - uses: open-delivery-spec/github-action@v1
   with:
-    check: all
+    check: branch-naming
+    branch_name: ${{ github.head_ref }}
 ```
 
 ## Design Principles
