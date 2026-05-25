@@ -2,6 +2,7 @@
 
 **A lightweight, machine-readable standard for AI-aware pull request and delivery metadata.**
 
+> [!TIP]
 > ODS does not prove the code is correct. It proves the delivery process contains the minimum structured evidence needed for humans and machines to review the change responsibly.
 
 AI writes code faster than ever. But delivery governance — review, verification, audit — hasn't kept up. ODS defines a small set of machine-readable metadata conventions that CI tools and AI agents can validate before merge.
@@ -28,7 +29,7 @@ Three checks that run in CI. Adopt in ~5 minutes.
 | Repository | Description |
 |-----------|-------------|
 | [spec](https://github.com/open-delivery-spec/spec) | Core specification, JSON Schemas, documentation |
-| [cli](https://github.com/open-delivery-spec/cli) | CLI — `ods validate branch|commit|pr` |
+| [cli](https://github.com/open-delivery-spec/cli) | CLI — `ods validate branch\|commit\|pr` |
 | [validate-action](https://github.com/open-delivery-spec/validate-action) | GitHub Action for CI compliance |
 
 ## Modules
