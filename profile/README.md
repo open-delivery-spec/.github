@@ -31,7 +31,7 @@ PASS / WARN / BLOCK
 |-----------|-------------|
 | [spec](https://github.com/open-delivery-spec/spec) | Core specification, design principles, roadmap |
 | [cli](https://github.com/open-delivery-spec/cli) | CLI — `ods detect | analyze | score | check | hook | init` |
-| [validate-action](https://github.com/open-delivery-spec/validate-action) | GitHub Action for CI compliance |
+| [validate-action](https://github.com/open-delivery-spec/validate-action) | GitHub Action — AI code quality gate for CI |
 
 ## Quick Start
 
@@ -97,10 +97,47 @@ deny[msg] {
 
 ## CI Integration
 
+Scaffold a complete CI workflow with one command:
+
+```bash
+ods init
+```
+
+This generates `.github/workflows/ods-ai-quality.yml`:
+
 ```yaml
-- uses: open-delivery-spec/validate-action@v1
+name: ODS AI Code Quality
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  ods:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-go@v6
+        with:
+          go-version: "1.25"
+      - name: Install ODS
+        run: go install github.com/open-delivery-spec/cli/cmd/ods@latest
+      - name: Detect AI code
+        run: ods detect --json
+      - name: Analyze AI code quality
+        run: ods analyze --json
+      - name: Score technical debt
+        run: ods score --json
+      - name: Evaluate policy
+        run: ods check --json
+```
+
+Or use the one-step Action:
+
+```yaml
+- uses: actions/checkout@v6
   with:
-    check: all
+    fetch-depth: 0
+- uses: open-delivery-spec/validate-action@v2
 ```
 
 ## Design Principles
