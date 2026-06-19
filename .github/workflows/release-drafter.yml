@@ -1,11 +1,5 @@
-# Shared Release Drafter config for open-delivery-spec org
-# Referenced by repos via: config-name: open-delivery-spec/.github:.github/workflows/release-drafter.yml
-# https://github.com/release-drafter/release-drafter
-#
-# This file serves dual purpose:
-# 1. A GitHub Actions workflow that runs on push to main
-# 2. A shared Release Drafter configuration referenced by other repos
-#    (release-drafter reads the config keys and ignores workflow-level keys)
+# Release Drafter workflow for open-delivery-spec/.github
+# Uses shared config from .github/release-drafter-config.yml
 
 name: Release Drafter
 
@@ -27,101 +21,6 @@ jobs:
     steps:
       - uses: release-drafter/release-drafter@693d20e7c1ce1a81d3a41962f85914253b518449 # v7.3.1
         with:
-          config-name: open-delivery-spec/.github:.github/workflows/release-drafter.yml
+          config-name: open-delivery-spec/.github:release-drafter-config.yml
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-# --- Shared config below (parsed by release-drafter via config-name) ---
-
-name-template: 'v$RESOLVED_VERSION'
-tag-template: 'v$RESOLVED_VERSION'
-
-categories:
-  - title: 💥 Breaking changes
-    labels:
-      - breaking
-  - title: 🚀 Features
-    labels:
-      - feature
-      - enhancement
-  - title: 🐛 Bug fixes
-    labels:
-      - bug
-      - bugfix
-      - fix
-      - regression
-  - title: 📝 Documentation
-    labels:
-      - documentation
-  - title: 🚦 Tests
-    labels:
-      - test
-      - tests
-  - title: 👻 Maintenance
-    labels:
-      - chore
-      - internal
-      - maintenance
-  - title: 📦 Dependencies
-    labels:
-      - dependencies
-    collapse-after: 15
-  - title: 🗑 Removed
-    labels:
-      - removed
-      - deprecated
-  - title: ✍ Other changes
-
-exclude-labels:
-  - no-changelog
-  - skip-changelog
-  - invalid
-  - duplicate
-  - question
-  - wontfix
-
-change-template: '- $TITLE by @$AUTHOR in #$NUMBER'
-
-version-resolver:
-  major:
-    labels:
-      - major
-  minor:
-    labels:
-      - minor
-  patch:
-    labels:
-      - patch
-  default: patch
-
-template: |
-  ## What's Changed
-
-  $CHANGES
-
-  **Full Changelog**: https://github.com/$OWNER/$REPOSITORY/compare/$PREVIOUS_TAG...v$RESOLVED_VERSION
-
-autolabeler:
-  - label: documentation
-    files:
-      - '*.md'
-      - '*.rst'
-  - label: bug
-    branch:
-      - /fix\/.+/
-      - /bugfix\/.+/
-    title:
-      - /fix/i
-      - /bug/i
-  - label: feature
-    branch:
-      - /feature\/.+/
-      - /feat\/.+/
-    title:
-      - /feat/i
-  - label: chore
-    branch:
-      - /chore\/.+/
-  - label: test
-    branch:
-      - /test\/.+/
