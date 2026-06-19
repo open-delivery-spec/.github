@@ -62,7 +62,7 @@ Or use the one-step GitHub Action on every PR:
 | Repository | Description |
 |-----------|-------------|
 | [spec](https://github.com/open-delivery-spec/spec) | Core specification, design principles, roadmap |
-| [cli](https://github.com/open-delivery-spec/cli) | CLI — `ods detect | analyze | score | check | hook | init` |
+| [cli](https://github.com/open-delivery-spec/cli) | CLI — ods detect \| analyze \| score \| check \| hook \| init |
 | [validate-action](https://github.com/open-delivery-spec/validate-action) | GitHub Action — AI code quality gate for CI |
 
 ## What ODS Detects
