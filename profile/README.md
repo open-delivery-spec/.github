@@ -1,6 +1,6 @@
 # 🚀 Open Delivery Spec
 
-> **AI writes the code. ODS governs the delivery.**
+**AI writes the code. ODS governs the delivery.**
 
 ## The problem it solves
 
