@@ -1,10 +1,14 @@
 # 🚀 Open Delivery Spec
 
-> **Detect AI-generated code, analyze its quality, and prevent technical debt — before it reaches production.**
+> **AI writes the code. ODS governs the delivery.**
 
-AI writes code faster than ever. But AI code increases technical debt in predictable ways — hallucinated APIs, redundant error handling, over-commenting, missing tests, and invisible AI authorship. ODS is the CI gate that stops this.
+## The problem it solves
 
-## The Four Steps
+A PR arrives: 8 commits, 6 written by Copilot, 2 by a human. The branch says `feature/add-sarif-output`. But two changed files touch the authentication module — nothing to do with SARIF. The reviewer doesn't know. The merge happens. A bug ships.
+
+**ODS catches this before the merge.** In CI. Without requiring any reviewer to be an expert.
+
+ODS is the CI gate that detects AI-generated code, analyzes its quality, scores technical debt impact, and enforces enterprise policy — on every pull request.
 
 ```
 PR arrived
@@ -25,6 +29,34 @@ PR arrived
 PASS / WARN / BLOCK
 ```
 
+## Quick Start
+
+```bash
+# Install
+go install github.com/open-delivery-spec/cli/cmd/ods@latest
+
+# Detect AI code in your PR
+ods detect --diff-base origin/main --branch feature/my-feature
+
+# Analyze AI code quality
+ods analyze --json
+
+# Score technical debt impact
+ods score --json
+
+# Enforce enterprise policy
+ods check
+```
+
+Or use the one-step GitHub Action on every PR:
+
+```yaml
+- uses: actions/checkout@v4
+  with:
+    fetch-depth: 0
+- uses: open-delivery-spec/validate-action@v2
+```
+
 ## Repositories
 
 | Repository | Description |
@@ -33,34 +65,7 @@ PASS / WARN / BLOCK
 | [cli](https://github.com/open-delivery-spec/cli) | CLI — `ods detect | analyze | score | check | hook | init` |
 | [validate-action](https://github.com/open-delivery-spec/validate-action) | GitHub Action — AI code quality gate for CI |
 
-## Quick Start
-
-```bash
-# Install
-go install github.com/open-delivery-spec/cli/cmd/ods@latest
-
-# Detect AI code in your PR
-ods detect
-
-# Analyze AI code quality
-ods analyze
-
-# Score technical debt impact
-ods score
-
-# Enforce enterprise policy
-ods check
-
-# Install pre-commit hooks
-ods hook install
-
-# Scaffold CI workflow and agent instructions
-ods init
-```
-
-## Detection Signals
-
-ODS detects AI code without relying on developer self-disclosure:
+## What ODS Detects
 
 | Signal | Source | Confidence |
 |---|---|---|
@@ -76,8 +81,20 @@ ODS detects AI code without relying on developer self-disclosure:
 | `ai-redundant-error-handling` | Dense clusters of if-err-nil blocks | medium |
 | `ai-over-commenting` | Comment-to-code ratio >40% | medium-high |
 | `ai-missing-edge-case` | if-statements without else branches | low |
-| `ai-unsafe-deserialization` | Unsafe type assertions / unmarshals | high |
+| `ai-unsafe-deserialization` | json.Unmarshal into interface{} | high |
 | `ai-inconsistent-pattern` | Mixed naming / indentation styles | medium-low |
+
+## How ODS Relates to APP and C2PA
+
+**APP** (AI Content Provenance) and **C2PA** answer the question: *"Was this text/image AI-generated?"* — targeting content platforms and EU AI Act compliance. **ODS** answers a different question: *"Is this AI-generated code safe and ready to ship?"* — targeting software engineering teams and CI/CD pipelines. They are complementary: you might use C2PA to mark AI-generated documentation, and ODS to govern how that documentation's PR was reviewed and deployed.
+
+## Used By
+
+| Project | Modules Used | Since |
+|---|---|---|
+| [open-delivery-spec/spec](https://github.com/open-delivery-spec/spec) | L1 validation | June 2026 |
+| [open-delivery-spec/cli](https://github.com/open-delivery-spec/cli) | L1 validation | June 2026 |
+| [open-delivery-spec/validate-action](https://github.com/open-delivery-spec/validate-action) | L1 validation | June 2026 |
 
 ## Enterprise Policy
 
@@ -93,51 +110,13 @@ deny[msg] {
     input.test_coverage < 0.3
     msg = "AI code with low test coverage"
 }
-```
 
-## CI Integration
-
-Scaffold a complete CI workflow with one command:
-
-```bash
-ods init
-```
-
-This generates `.github/workflows/ods-ai-quality.yml`:
-
-```yaml
-name: ODS AI Code Quality
-on:
-  pull_request:
-    types: [opened, synchronize, reopened]
-
-jobs:
-  ods:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v6
-      - uses: actions/setup-go@v6
-        with:
-          go-version: "1.25"
-      - name: Install ODS
-        run: go install github.com/open-delivery-spec/cli/cmd/ods@latest
-      - name: Detect AI code
-        run: ods detect --json
-      - name: Analyze AI code quality
-        run: ods analyze --json
-      - name: Score technical debt
-        run: ods score --json
-      - name: Evaluate policy
-        run: ods check --json
-```
-
-Or use the one-step Action:
-
-```yaml
-- uses: actions/checkout@v6
-  with:
-    fetch-depth: 0
-- uses: open-delivery-spec/validate-action@v2
+warn[msg] {
+    input.ai_generated == true
+    input.ai_confidence > 0.6
+    count(input.issues) > 2
+    msg = "High-confidence AI code with multiple quality issues"
+}
 ```
 
 ## Design Principles
