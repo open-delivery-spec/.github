@@ -51,10 +51,10 @@ ods check
 Or use the one-step GitHub Action on every PR:
 
 ```yaml
-- uses: actions/checkout@v4
+- uses: actions/checkout@v7
   with:
     fetch-depth: 0
-- uses: open-delivery-spec/validate-action@v2
+- uses: open-delivery-spec/validate-action@v1
 ```
 
 ## Repositories
@@ -79,10 +79,10 @@ Or use the one-step GitHub Action on every PR:
 | Rule | What it detects | Severity |
 |---|---|---|
 | `ai-redundant-error-handling` | Dense clusters of if-err-nil blocks | medium |
-| `ai-over-commenting` | Comment-to-code ratio >40% | medium-high |
+| `ai-over-commenting` | Comment-to-code ratio >40% (≥50% → high) | medium / high |
 | `ai-missing-edge-case` | if-statements without else branches | low |
 | `ai-unsafe-deserialization` | json.Unmarshal into interface{} | high |
-| `ai-inconsistent-pattern` | Mixed naming / indentation styles | medium-low |
+| `ai-inconsistent-pattern` | Mixed naming / indentation styles | medium / low |
 
 ## How ODS Relates to APP and C2PA
 
