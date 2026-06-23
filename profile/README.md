@@ -1,26 +1,52 @@
+<div align="center">
+
 # Open Delivery Spec
 
-> **Zero-config AI code quality gate for teams using Claude Code, GitHub Copilot, or Cursor.**
-> These tools already write `Co-Authored-By` trailers to every commit. ODS reads them
-> automatically in CI — detecting AI-generated code, analyzing quality, scoring technical
-> debt, and enforcing policy on every PR.
+### Zero-config AI code quality gate for every pull request
 
-## How it works
+**Claude Code, GitHub Copilot, and Cursor already stamp `Co-Authored-By` trailers on every commit.**
+ODS reads them automatically in CI — detecting AI-generated code, analyzing its quality,
+scoring technical-debt impact, and enforcing your policy before merge.
 
-ODS runs as a four-step pipeline on every pull request:
+[![Spec](https://img.shields.io/badge/spec-read-blue)](https://github.com/open-delivery-spec/spec)
+[![CLI](https://img.shields.io/badge/CLI-Go-00ADD8?logo=go)](https://github.com/open-delivery-spec/cli)
+[![GitHub Action](https://img.shields.io/badge/GitHub_Action-v1-2088FF?logo=githubactions&logoColor=white)](https://github.com/open-delivery-spec/validate-action)
+[![License](https://img.shields.io/badge/license-Apache_2.0-green.svg)](https://github.com/open-delivery-spec/spec/blob/main/LICENSE)
 
-1. **Detect** — reads `Co-Authored-By` commit trailers (primary signal), ODS trailer fields,
-   PR body, branch name, and diff heuristics to determine AI involvement with a confidence score
-2. **Analyze** — identifies AI-specific quality defects: redundant error handling,
-   over-commenting, missing edge cases, unsafe deserialization, inconsistent patterns
-3. **Score** — calculates technical debt impact across five weighted dimensions
-4. **Check** — evaluates your OPA Rego policy; blocks, warns, or passes the PR
+</div>
 
-Signals are heuristic — ODS is a **signal producer, not a quality oracle**. A
-`PASS` means no deny rule fired. A detection at 85% confidence means ODS is 85% confident
-the code is AI-assisted, not that exactly 85% of lines were written by an AI.
+---
 
-## Quick Start
+## The pipeline
+
+ODS runs four steps on every pull request:
+
+```
+   PR opened
+      │
+      ▼
+ ①  Detect   →  Is there AI code?            (Co-Authored-By trailers, branch prefix, PR disclosure, diff heuristics)
+      │
+      ▼
+ ②  Analyze  →  What quality defects?        (5 rule categories for AI-specific failure modes)
+      │
+      ▼
+ ③  Score    →  How much tech debt added?    (5-dimension weighted model)
+      │
+      ▼
+ ④  Check    →  Block, warn, or pass?        (your OPA Rego policy)
+      │
+      ▼
+  PASS · WARN · BLOCK   +   PR comment · job summary · HTML report · badge
+```
+
+Signals are heuristic — ODS is a **signal producer, not a quality oracle**. A `PASS` means no
+deny rule fired; an 85% detection means ODS is 85% confident the code is AI-assisted, not that
+85% of the lines were.
+
+## Quick start
+
+Add the Action — that's the whole setup:
 
 ```yaml
 # .github/workflows/ods.yml
@@ -46,26 +72,30 @@ jobs:
           branch: ${{ github.head_ref }}
 ```
 
-Or scaffold everything locally:
+Prefer the CLI, or want it locally too?
 
 ```bash
 go install github.com/open-delivery-spec/cli/cmd/ods@latest
-ods init        # creates workflow, .ods/policy.rego, AGENTS.md, Cursor rules
-ods hook install
+ods init           # scaffolds .github/workflows/ods-ai-quality.yml + .ods/policy.rego
+ods hook install   # optional: block low-quality AI code before it leaves your machine
 ```
 
 ## Repositories
 
 | Repo | What it is |
-|------|-----------|
-| [spec](https://github.com/open-delivery-spec/spec) | Core specification, design philosophy, case studies |
-| [cli](https://github.com/open-delivery-spec/cli) | Go CLI — `ods detect / analyze / score / check / init` |
-| [validate-action](https://github.com/open-delivery-spec/validate-action) | GitHub Action wrapping the full pipeline |
+|------|------------|
+| 📘 [**spec**](https://github.com/open-delivery-spec/spec) | The specification, design philosophy, docs site, and case studies |
+| ⚙️ [**cli**](https://github.com/open-delivery-spec/cli) | Go CLI — `ods detect · analyze · score · check · init · hook` |
+| 🤖 [**validate-action**](https://github.com/open-delivery-spec/validate-action) | One-step GitHub Action wrapping the full pipeline |
 
-## Positioning
+## Where ODS fits
 
-Unlike **OpenSSF Scorecard** (which measures supply-chain security practices) and
-**SLSA** (which tracks artifact provenance), ODS focuses on the gap neither covers:
-whether AI-generated code is safe to merge — and whether your team can prove it.
+Unlike **OpenSSF Scorecard** (supply-chain security practices) and **SLSA** (artifact provenance),
+ODS targets the gap neither covers: **whether AI-generated code is safe to merge — and whether your
+team can prove it.** It's tool-agnostic, policy-driven, and machine-readable by design.
 
-Licensed under Apache 2.0.
+<div align="center">
+
+Apache 2.0 · Built in the open
+
+</div>
