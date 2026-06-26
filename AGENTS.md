@@ -27,27 +27,30 @@ Each repository also has its own `AGENTS.md` with repo-specific rules. This file
 
   Never branch from a stale local `main` or from another feature branch.
 
-- **Branch names must follow Conventional Branch naming.** Allowed prefixes:
+- **Branch names must follow [Conventional Branch](https://conventional-branch.github.io/) naming.** Allowed prefixes:
 
   | Prefix | Use for |
   |--------|---------|
-  | `feat/` | New features |
-  | `fix/` | Bug fixes |
-  | `docs/` | Documentation only |
-  | `chore/` | Maintenance, dependencies |
-  | `ci/` | CI/CD changes |
-  | `refactor/` | Refactoring without behavior change |
-  | `test/` | Tests only |
-  | `build/` | Build system |
-  | `perf/` | Performance improvements |
-  | `revert/` | Reverting a commit |
+  | `feature/` | New features |
+  | `bugfix/` | Bug fixes |
+  | `hotfix/` | Urgent production fixes |
+  | `release/` | Release preparation |
+  | `chore/` | Maintenance, dependencies, **tests, docs, CI, refactors** |
 
-  AI-agent branches are also accepted: `claude/`, `copilot/`, `github-actions/`
+  AI-agent branches are also accepted: `claude/`, `copilot/`, `cursor/`, `github-actions/`
+
+  Long-lived branches: `main`, `master`, `develop`
 
   Branch names must be **lowercase**. The description part after the prefix must not contain `/`.
 
-  Good: `feat/sarif-ingestion`, `fix/coverage-sentinel`, `claude/my-task-id`
-  Bad: `feature/Add-SARIF`, `fix/my/nested/path`
+  Good: `feature/sarif-ingestion`, `bugfix/coverage-sentinel`, `chore/add-tests`, `claude/my-task-id`
+  Bad: `feature/Add-SARIF`, `feat/x` (feat is a commit type, not a branch type), `chore/my/nested/path`
+
+> ⚠️ **Conventional _Branch_ types are NOT the same as Conventional _Commit_ types.**
+> Branch names use `feature/bugfix/hotfix/release/chore`; commit messages use
+> `feat/fix/docs/test/…`. Prefixes like `test/`, `feat/`, `fix/`, `docs/`, `ci/` are
+> valid commit types but **not** valid branch prefixes — `commit-check` rejects them.
+> For test/docs/CI/refactor work, branch under `chore/`.
 
 ## Commit Message Rules
 
