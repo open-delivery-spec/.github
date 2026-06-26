@@ -8,10 +8,10 @@
 ODS reads them automatically in CI — detecting AI-generated code, analyzing its quality,
 scoring technical-debt impact, and enforcing your policy before merge.
 
-[![Spec](https://img.shields.io/badge/spec-read-blue)](https://github.com/open-delivery-spec/spec)
+[![Spec](https://img.shields.io/badge/spec-read-blue?logo=readthedocs&logoColor=white)](https://github.com/open-delivery-spec/spec)
 [![CLI](https://img.shields.io/badge/CLI-Go-00ADD8?logo=go)](https://github.com/open-delivery-spec/cli)
 [![GitHub Action](https://img.shields.io/badge/GitHub_Action-v1-2088FF?logo=githubactions&logoColor=white)](https://github.com/open-delivery-spec/validate-action)
-[![License](https://img.shields.io/badge/license-Apache_2.0-green.svg)](https://github.com/open-delivery-spec/spec/blob/main/LICENSE)
+[![License](https://img.shields.io/badge/license-Apache_2.0-green?logo=apache)](https://github.com/open-delivery-spec/spec/blob/main/LICENSE)
 
 </div>
 
