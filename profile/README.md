@@ -28,10 +28,10 @@ ODS runs four steps on every pull request:
  ①  Detect   →  Is there AI code?            (Co-Authored-By trailers, branch prefix, PR disclosure, diff heuristics)
       │
       ▼
- ②  Analyze  →  What quality defects?        (5 rule categories for AI-specific failure modes)
+ ②  Analyze  →  What quality defects?        (built-in AI heuristics + imported SARIF findings)
       │
       ▼
- ③  Score    →  How much tech debt added?    (5-dimension weighted model)
+ ③  Score    →  How much tech debt added?    (quality-driven, weighted by AI risk)
       │
       ▼
  ④  Check    →  Block, warn, or pass?        (your OPA Rego policy)
