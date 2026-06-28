@@ -5,7 +5,7 @@
 ### Zero-config AI code quality gate for every pull request
 
 **Claude Code, GitHub Copilot, and Cursor already stamp `Co-Authored-By` trailers on every commit.**
-ODS reads them automatically in CI — detecting AI-generated code, analyzing its quality,
+ODS reads them automatically in CI — attributing AI-generated code, analyzing its quality,
 scoring technical-debt impact, and enforcing your policy before merge.
 
 [![Spec](https://img.shields.io/badge/spec-read-blue?logo=readthedocs&logoColor=white)](https://github.com/open-delivery-spec/spec)
