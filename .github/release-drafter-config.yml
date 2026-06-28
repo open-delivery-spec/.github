@@ -71,26 +71,59 @@ template: |
   **Full Changelog**: https://github.com/$OWNER/$REPOSITORY/compare/$PREVIOUS_TAG...v$RESOLVED_VERSION
 
 autolabeler:
+  # ── Title-based (conventional commit prefix) ──────────────
+  - label: enhancement
+    title:
+      - /^feat(\(.*\))?:.*/
+      - /^feature(\(.*\))?:.*/
+      - /^perf(\(.*\))?:.*/
+  - label: bug
+    title:
+      - /^fix(\(.*\))?:.*/
+      - /^bugfix(\(.*\))?:.*/
+  - label: documentation
+    title:
+      - /^docs(\(.*\))?:.*/
+  - label: chore
+    title:
+      - /^chore(\(.*\))?:.*/
+      - /^refactor(\(.*\))?:.*/
+      - /^ci(\(.*\))?:.*/
+      - /^style(\(.*\))?:.*/
+      - /^build(\(.*\))?:.*/
+      - /^revert(\(.*\))?:.*/
+  - label: tests
+    title:
+      - /^test(\(.*\))?:.*/
+      - /^tests(\(.*\))?:.*/
+
+  # ── Branch-based ──────────────────────────────────────────
+  - label: enhancement
+    branch:
+      - /^feature\/.+/
+      - /^feat\/.+/
+  - label: bug
+    branch:
+      - /^fix\/.+/
+      - /^bugfix\/.+/
+  - label: chore
+    branch:
+      - /^chore\/.+/
+  - label: tests
+    branch:
+      - /^test\/.+/
+
+  # ── File-based ────────────────────────────────────────────
   - label: documentation
     files:
       - '*.md'
       - '*.rst'
-  - label: bug
-    branch:
-      - /fix\/.+/
-      - /bugfix\/.+/
-    title:
-      - /fix/i
-      - /bug/i
-  - label: feature
-    branch:
-      - /feature\/.+/
-      - /feat\/.+/
-    title:
-      - /feat/i
-  - label: chore
-    branch:
-      - /chore\/.+/
-  - label: test
-    branch:
-      - /test\/.+/
+      - '*.adoc'
+  - label: tests
+    files:
+      - 'test/**'
+      - 'tests/**'
+      - '__tests__/**'
+      - '*_test.go'
+      - '*.test.*'
+
