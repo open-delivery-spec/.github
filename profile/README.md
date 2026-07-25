@@ -2,11 +2,11 @@
 
 # Open Delivery Spec
 
-### Zero-config AI code quality gate for every pull request
+### Zero-config governance and visibility for AI-assisted code
 
 **Claude Code, GitHub Copilot, and Cursor already stamp `Co-Authored-By` trailers on every commit.**
-ODS reads them automatically in CI — attributing AI-generated code, analyzing its quality,
-scoring technical-debt impact, and enforcing your policy before merge.
+ODS reads them automatically in CI — showing how much of your delivery is AI-assisted,
+routing review attention to the changes that need it, and enforcing your policy before merge.
 
 [![Spec](https://img.shields.io/badge/spec-read-blue?logo=readthedocs&logoColor=white)](https://github.com/open-delivery-spec/spec)
 [![CLI](https://img.shields.io/badge/CLI-Go-00ADD8?logo=go)](https://github.com/open-delivery-spec/cli)
