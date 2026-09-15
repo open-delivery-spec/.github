@@ -80,6 +80,29 @@ ods init           # scaffolds .github/workflows/ods-ai-quality.yml + .ods/polic
 ods hook install   # optional: block low-quality AI code before it leaves your machine
 ```
 
+## The organization view
+
+One repository answers "how much of this project is AI-assisted". The
+[`org-ai-report`](https://github.com/open-delivery-spec/.github/blob/main/.github/workflows/org-ai-report.yml)
+reusable workflow answers it for every repository at once: on a schedule it
+scans them, merges the results with `ods report merge`, and publishes one
+dashboard as an artifact, a job summary, or GitHub Pages. Nothing leaves your
+GitHub account.
+
+```yaml
+jobs:
+  ai-report:
+    uses: open-delivery-spec/.github/.github/workflows/org-ai-report.yml@main
+    permissions:
+      contents: read
+```
+
+That covers every repository of the organization it runs in; `with:` takes
+`org`, `repos`, `since` and `deploy-pages` when you want something else. We run
+it on ourselves: [latest run](https://github.com/open-delivery-spec/.github/actions/workflows/org-ai-report.yml).
+
+Guide: [Organization-wide View](https://open-delivery-spec.github.io/spec/org-view.html).
+
 ## Repositories
 
 | Repo | What it is |
