@@ -1,0 +1,193 @@
+# Organization-wide AI attribution report — a reusable workflow.
+#
+# Call it from any repository on a schedule. Give it the repositories to cover
+# (an explicit list, or an organization to discover them from) and it clones
+# each one, runs `ods report`, merges the results with `ods report merge`, and
+# publishes one dashboard: a workflow artifact, a job summary, and optionally
+# the calling repository's GitHub Pages. Nothing leaves your GitHub account;
+# there is no service behind it. Guide:
+# https://open-delivery-spec.github.io/spec/org-view.html
+#
+#   jobs:
+#     ai-report:
+#       uses: open-delivery-spec/.github/.github/workflows/org-ai-report.yml@main
+#       permissions:
+#         contents: read
+#       with:
+#         org: your-org
+#       secrets:
+#         token: ${{ secrets.ODS_ORG_READ_TOKEN }}   # private repositories only
+
+name: ODS Organization AI Report
+
+on:
+  workflow_call:
+    inputs:
+      repos:
+        description: >-
+          Repositories to cover, one owner/name per line. Leave empty to
+          discover them from `org`.
+        type: string
+        default: ''
+      org:
+        description: >-
+          Organization (or user) whose repositories to cover when `repos` is
+          empty. Archived repositories and forks are skipped.
+        type: string
+        default: ''
+      since:
+        description: History window, any git --since expression.
+        type: string
+        default: '90 days ago'
+      cli-ref:
+        description: ODS CLI version, tag or commit to install.
+        type: string
+        default: 'main'
+      artifact-name:
+        description: Name of the uploaded report artifact.
+        type: string
+        default: 'ods-org-report'
+      deploy-pages:
+        description: >-
+          Publish the dashboard to the calling repository's GitHub Pages. The
+          calling job must grant `pages: write` and `id-token: write`, and the
+          repository's Pages source must be set to GitHub Actions.
+        type: boolean
+        default: false
+    secrets:
+      token:
+        description: >-
+          Token that can read the repositories: a fine-grained personal access
+          token with Contents (read) on them, or a GitHub App token. Without
+          it the workflow's own GITHUB_TOKEN is used, which reads public
+          repositories and the calling repository only; the rest are skipped
+          with a warning.
+        required: false
+
+jobs:
+  report:
+    name: Scan and merge
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version: '1.25'
+          cache: false
+
+      - name: Install ODS CLI
+        env:
+          CLI_REF: ${{ inputs.cli-ref }}
+        run: go install "github.com/open-delivery-spec/cli/cmd/ods@${CLI_REF}"
+
+      - name: Resolve repositories
+        env:
+          GH_TOKEN: ${{ secrets.token || github.token }}
+          REPOS: ${{ inputs.repos }}
+          ORG: ${{ inputs.org }}
+        run: |
+          set -euo pipefail
+          if [ -n "${REPOS// /}" ]; then
+            printf '%s\n' "$REPOS" \
+              | sed 's/#.*//;s/^[[:space:]]*//;s/[[:space:]]*$//' \
+              | grep -v '^$' > repos.txt || true
+          elif [ -n "$ORG" ]; then
+            # An organization first; a personal account keeps its repositories under /users.
+            { gh api --paginate "orgs/${ORG}/repos?type=all&per_page=100" 2>/dev/null \
+                || gh api --paginate "users/${ORG}/repos?per_page=100"; } \
+              | jq -r '.[] | select(.archived | not) | select(.fork | not) | .full_name' \
+              | sort -u > repos.txt
+          else
+            echo "::error::Set 'repos' (one owner/name per line) or 'org'."
+            exit 1
+          fi
+          if [ ! -s repos.txt ]; then
+            echo "::error::No repositories to report on."
+            exit 1
+          fi
+          echo "Repositories ($(wc -l < repos.txt)):"
+          sed 's/^/  /' repos.txt
+
+      - name: Scan repositories
+        id: scan
+        env:
+          GH_TOKEN: ${{ secrets.token || github.token }}
+          SINCE: ${{ inputs.since }}
+          SERVER_URL: ${{ github.server_url }}
+        run: |
+          set -uo pipefail
+          mkdir -p reports work
+          host="${SERVER_URL#https://}"
+          skipped=0
+          while IFS= read -r repo; do
+            [ -z "$repo" ] && continue
+            name="${repo//\//__}"
+            echo "::group::${repo}"
+            # A partial clone keeps the full commit history (trailers and dates
+            # live there) and fetches blobs only when git needs them for the
+            # window's diffs. No shallow graft, so no boundary commit counts its
+            # whole tree as an insertion.
+            if git clone --quiet --no-checkout --no-tags --filter=blob:none \
+                 "https://x-access-token:${GH_TOKEN}@${host}/${repo}.git" "work/${name}"; then
+              if ! (cd "work/${name}" && ods report --since "${SINCE}" --repo "${repo}" --json > "../../reports/${name}.json"); then
+                echo "::warning::ods report failed for ${repo} — skipped"
+                rm -f "reports/${name}.json"
+                skipped=$((skipped + 1))
+              fi
+              rm -rf "work/${name}"
+            else
+              echo "::warning::Could not clone ${repo} (no access with this token, or it does not exist) — skipped"
+              skipped=$((skipped + 1))
+            fi
+            echo "::endgroup::"
+          done < repos.txt
+          echo "skipped=${skipped}" >> "$GITHUB_OUTPUT"
+          if ! ls reports/*.json >/dev/null 2>&1; then
+            echo "::error::No repository could be scanned."
+            exit 1
+          fi
+
+      - name: Merge into the organization report
+        env:
+          SKIPPED: ${{ steps.scan.outputs.skipped }}
+        run: |
+          set -euo pipefail
+          mkdir -p site/repos
+          ods report merge reports/*.json --json > site/org-report.json
+          ods report merge reports/*.json --html site/index.html --markdown site/summary.md
+          cp reports/*.json site/repos/
+          {
+            cat site/summary.md
+            if [ "${SKIPPED}" != "0" ]; then
+              echo
+              echo "_${SKIPPED} repository(ies) could not be scanned; see the workflow log._"
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload report
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: ${{ inputs.artifact-name }}
+          path: site/
+
+      - name: Upload Pages artifact
+        if: inputs.deploy-pages
+        uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
+        with:
+          path: site/
+
+  deploy:
+    name: Publish to GitHub Pages
+    if: inputs.deploy-pages
+    needs: report
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5.0.1
