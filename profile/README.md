@@ -95,9 +95,11 @@ jobs:
     uses: open-delivery-spec/.github/.github/workflows/org-ai-report.yml@main
     permissions:
       contents: read
-    with:
-      org: your-org
 ```
+
+That covers every repository of the organization it runs in; `with:` takes
+`org`, `repos`, `since` and `deploy-pages` when you want something else. We run
+it on ourselves: [latest run](https://github.com/open-delivery-spec/.github/actions/workflows/org-ai-report.yml).
 
 Guide: [Organization-wide View](https://open-delivery-spec.github.io/spec/org-view.html).
 
