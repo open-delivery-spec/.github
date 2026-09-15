@@ -8,6 +8,9 @@
 # there is no service behind it. Guide:
 # https://open-delivery-spec.github.io/spec/org-view.html
 #
+# This repository also runs it on itself, weekly and by hand from the Actions
+# tab, so the ODS organization's own dashboard is one click away.
+#
 #   jobs:
 #     ai-report:
 #       uses: open-delivery-spec/.github/.github/workflows/org-ai-report.yml@main
@@ -32,7 +35,8 @@ on:
       org:
         description: >-
           Organization (or user) whose repositories to cover when `repos` is
-          empty. Archived repositories and forks are skipped.
+          empty. Defaults to the owner of the calling repository. Archived
+          repositories and forks are skipped.
         type: string
         default: ''
       since:
@@ -63,6 +67,37 @@ on:
           repositories and the calling repository only; the rest are skipped
           with a warning.
         required: false
+  # By hand, from this repository's Actions tab, with the same inputs.
+  workflow_dispatch:
+    inputs:
+      repos:
+        description: Repositories to cover, one owner/name per line (empty = discover from org)
+        type: string
+        default: ''
+      org:
+        description: Organization whose repositories to cover (empty = this repository's owner)
+        type: string
+        default: ''
+      since:
+        description: History window, any git --since expression
+        type: string
+        default: '90 days ago'
+      cli-ref:
+        description: ODS CLI version, tag or commit to install
+        type: string
+        default: 'main'
+      artifact-name:
+        description: Name of the uploaded report artifact
+        type: string
+        default: 'ods-org-report'
+      deploy-pages:
+        description: Publish the dashboard to this repository's GitHub Pages
+        type: boolean
+        default: false
+  # On a schedule, for this organization itself, with the defaults above:
+  # the report lands as a workflow artifact and in the run's job summary.
+  schedule:
+    - cron: '0 6 * * 1'  # Mondays 06:00 UTC
 
 jobs:
   report:
@@ -78,14 +113,14 @@ jobs:
 
       - name: Install ODS CLI
         env:
-          CLI_REF: ${{ inputs.cli-ref }}
+          CLI_REF: ${{ inputs.cli-ref || 'main' }}
         run: go install "github.com/open-delivery-spec/cli/cmd/ods@${CLI_REF}"
 
       - name: Resolve repositories
         env:
           GH_TOKEN: ${{ secrets.token || github.token }}
           REPOS: ${{ inputs.repos }}
-          ORG: ${{ inputs.org }}
+          ORG: ${{ inputs.org || github.repository_owner }}
         run: |
           set -euo pipefail
           if [ -n "${REPOS// /}" ]; then
@@ -113,7 +148,7 @@ jobs:
         id: scan
         env:
           GH_TOKEN: ${{ secrets.token || github.token }}
-          SINCE: ${{ inputs.since }}
+          SINCE: ${{ inputs.since || '90 days ago' }}
           SERVER_URL: ${{ github.server_url }}
         run: |
           set -uo pipefail
@@ -168,7 +203,7 @@ jobs:
       - name: Upload report
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          name: ${{ inputs.artifact-name }}
+          name: ${{ inputs.artifact-name || 'ods-org-report' }}
           path: site/
 
       - name: Upload Pages artifact
