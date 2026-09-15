@@ -8,8 +8,9 @@
 # there is no service behind it. Guide:
 # https://open-delivery-spec.github.io/spec/org-view.html
 #
-# This repository also runs it on itself, weekly and by hand from the Actions
-# tab, so the ODS organization's own dashboard is one click away.
+# This repository also runs it on itself: weekly, by hand from the Actions
+# tab, and on every pull request that changes this file (a self-test), so the
+# ODS organization's own dashboard is one click away.
 #
 #   jobs:
 #     ai-report:
@@ -94,6 +95,10 @@ on:
         description: Publish the dashboard to this repository's GitHub Pages
         type: boolean
         default: false
+  # On pull requests that change this file: a self-test on this organization.
+  pull_request:
+    paths:
+      - .github/workflows/org-ai-report.yml
   # On a schedule, for this organization itself, with the defaults above:
   # the report lands as a workflow artifact and in the run's job summary.
   schedule:
