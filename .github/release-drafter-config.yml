@@ -51,6 +51,8 @@ exclude-labels:
 
 change-template: '- $TITLE by @$AUTHOR in #$NUMBER'
 
+# Pre-1.0: a breaking change bumps the minor version (0.7 -> 0.8). Move
+# `breaking` under `major` when the CLI reaches 1.0.
 version-resolver:
   major:
     labels:
@@ -58,6 +60,7 @@ version-resolver:
   minor:
     labels:
       - minor
+      - breaking
   patch:
     labels:
       - patch
@@ -71,6 +74,16 @@ template: |
   **Full Changelog**: https://github.com/$OWNER/$REPOSITORY/compare/$PREVIOUS_TAG...v$RESOLVED_VERSION
 
 autolabeler:
+  # ── Breaking changes: the Conventional Commits `!` marker or footer ──
+  # A `refactor!:` title matches none of the type rules below (they stop at
+  # the colon), so without this rule a breaking change lands in "Other
+  # changes" and the drafter proposes a patch bump.
+  - label: breaking
+    title:
+      - /^\w+(\(.*\))?!:.*/
+    body:
+      - /BREAKING CHANGE:/
+
   # ── Title-based (conventional commit prefix) ──────────────
   - label: enhancement
     title:
