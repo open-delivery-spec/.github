@@ -25,60 +25,38 @@ ODS runs four steps on every pull request:
    PR opened
       │
       ▼
- ①  Detect   →  Is there AI code?            (Co-Authored-By trailers, branch prefix, PR disclosure, diff heuristics)
+ ①  Detect   →  Which changes are AI-assisted?     (Co-Authored-By trailers, git-ai notes, PR disclosure, branch prefix)
       │
       ▼
- ②  Analyze  →  What quality defects?        (built-in AI heuristics + imported SARIF findings)
+ ②  Analyze  →  What did the checks find?          (built-in AI heuristics + your scanners' SARIF)
       │
       ▼
- ③  Score    →  How much tech debt added?    (quality-driven, weighted by AI risk)
+ ③  Score    →  How much technical debt is added?  (driven by quality, amplified by AI share)
       │
       ▼
- ④  Check    →  Block, warn, or pass?        (your OPA Rego policy)
+ ④  Check    →  Does it meet your policy?          (OPA Rego: pass, warn, block + a review tier)
       │
       ▼
-  PASS · WARN · BLOCK   +   PR comment · job summary · HTML report · badge
+  PASS · WARN · BLOCK   +   PR comment · job summary · HTML report · evidence document
 ```
 
-Signals are heuristic — ODS is a **signal producer, not a quality oracle**. A `PASS` means no
-deny rule fired; an 85% detection means ODS is 85% confident the code is AI-assisted, not that
-85% of the lines were.
+ODS is a **signal producer, not a quality oracle**: attribution reflects what the
+tools disclose, a `PASS` means no deny rule fired, and no number claims code is
+correct.
 
 ## Quick start
 
-Add the Action — that's the whole setup:
-
-```yaml
-# .github/workflows/ods.yml
-name: ODS AI Code Quality
-on:
-  pull_request:
-    types: [opened, synchronize, reopened]
-
-jobs:
-  ods:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      pull-requests: write
-    steps:
-      - uses: actions/checkout@v7
-        with:
-          fetch-depth: 0
-      - uses: open-delivery-spec/validate-action@v1
-        with:
-          diff-base: ${{ github.event.pull_request.base.sha }}
-          pr-body: ${{ github.event.pull_request.body }}
-          branch: ${{ github.head_ref }}
-```
-
-Prefer the CLI, or want it locally too?
+Add [`open-delivery-spec/validate-action@v1`](https://github.com/open-delivery-spec/validate-action#quick-start)
+to your pull-request workflow; the whole setup is one job, and the Action's
+README has it ready to paste. Prefer the CLI, or want it locally too?
 
 ```bash
 go install github.com/open-delivery-spec/cli/cmd/ods@latest
-ods init           # scaffolds .github/workflows/ods-ai-quality.yml + .ods/policy.rego
-ods hook install   # optional: block low-quality AI code before it leaves your machine
+ods init   # writes the CI workflow and .ods/policy.rego (the built-in default, to edit)
 ```
+
+The [Get Started](https://open-delivery-spec.github.io/spec/get-started.html)
+guide covers rollout and policy customization.
 
 ## The organization view
 
@@ -107,15 +85,19 @@ Guide: [Organization-wide View](https://open-delivery-spec.github.io/spec/org-vi
 
 | Repo | What it is |
 |------|------------|
-| 📘 [**spec**](https://github.com/open-delivery-spec/spec) | The specification, design philosophy, docs site, and case studies |
-| ⚙️ [**cli**](https://github.com/open-delivery-spec/cli) | Go CLI — `ods detect · analyze · score · check · init · hook` |
+| 📘 [**spec**](https://github.com/open-delivery-spec/spec) | The specification: contracts (JSON Schemas), the conformance suite, policy templates and the docs site |
+| ⚙️ [**cli**](https://github.com/open-delivery-spec/cli) | Go CLI — `ods detect · analyze · score · check · report · attest · rules · init` |
 | 🤖 [**validate-action**](https://github.com/open-delivery-spec/validate-action) | One-step GitHub Action wrapping the full pipeline |
+| 🏢 [**.github**](https://github.com/open-delivery-spec/.github) | This profile and the `org-ai-report` reusable workflow |
 
 ## Where ODS fits
 
-Unlike **OpenSSF Scorecard** (supply-chain security practices) and **SLSA** (artifact provenance),
-ODS targets the gap neither covers: **whether AI-generated code is safe to merge — and whether your
-team can prove it.** It's tool-agnostic, policy-driven, and machine-readable by design.
+**OpenSSF Scorecard** covers supply-chain practices and **SLSA** artifact
+provenance; ODS covers the gap between them: which changes were AI-assisted,
+whether they met your policy, and whether you can show it. It consumes AI code
+reviewers' verdicts rather than competing with them. See
+[Ecosystem](https://open-delivery-spec.github.io/spec/ecosystem.html) and
+[ODS and SLSA](https://open-delivery-spec.github.io/spec/comparison/slsa.html).
 
 <div align="center">
 
