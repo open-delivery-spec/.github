@@ -56,7 +56,12 @@ ods init   # writes the CI workflow and .ods/policy.rego (the built-in default, 
 ```
 
 The [Get Started](https://open-delivery-spec.github.io/spec/get-started.html)
-guide covers rollout and policy customization.
+guide covers rollout and policy customization. Every repository in this
+organization runs the
+[open-source disclosure policy](https://open-delivery-spec.github.io/spec/oss-ai-policy.html)
+on its own pull requests, the same template a project copies to turn its
+CONTRIBUTING AI clause into a check; see
+[ADOPTERS.md](https://github.com/open-delivery-spec/spec/blob/main/ADOPTERS.md).
 
 ## The organization view
 
