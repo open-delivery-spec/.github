@@ -1,0 +1,14 @@
+.github/release-drafter-config.yml
+  h_20d8fd5fdd9091 10-12,14-17,19-24,26-28,30-33,35-39,41-43,46-49,51-79
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "ea452331f9bc7a473725f9706221c4110e0c154c",
+  "prompts": {},
+  "humans": {
+    "h_20d8fd5fdd9091": {
+      "author": "Xianpeng Shen <xianpeng.shen@gmail.com>"
+    }
+  }
+}
